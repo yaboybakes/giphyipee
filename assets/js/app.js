@@ -1,13 +1,13 @@
 var APIkey = "dc6zaTOxFJmzC";
 var url = "http://api.giphy.com/v1/gifs/search?q=";
 var search;
-	var movies = ['The Matrix', 'The Notebook', 'Mr. Nobody', 'The Lion King'];
+var movies = ['The Matrix', 'The Notebook', 'Mr. Nobody', 'The Lion King'];
 
 $(document).ready (function() {
-  $('.title').html("VEGETABLES");
   renderButtons();
 
   function renderButtons(){
+    console.log('render buttons function');
 
 		// Deletes the movies prior to adding new movies (this is necessary otherwise you will have repeat buttons)
 		$('#buttonMania').empty();
@@ -21,8 +21,10 @@ $(document).ready (function() {
 		    var a = $('<button>') // This code $('<button>') is all jQuery needs to create the beginning and end tag. (<button></button>)
 		    a.addClass('movie'); // Added a class
 		    a.attr('data-name', movies[i]); // Added a data-attribute
+        a.attr('data-state', "still");
 		    a.text(movies[i]); // Provided the initial button text
 		    $('#buttonMania').append(a); // Added the button to the HTML
+
 		}
 	}
 
@@ -41,14 +43,14 @@ $(document).ready (function() {
           var results = response.data;
           console.log(response);
           for (var i = 0; i < results.length; i++) {
-              var gifDiv = $('<div class="item">')
+              var gifDiv = $('<div class="col-xs-3">')
 
               var rating = results[i].rating;
 
               var p = $('<p>').text("Rating: " + rating);
 
               var personImage = $('<img>');
-              personImage.attr('src', results[i].images.fixed_height.url);
+              personImage.attr('src', results[i].images.downsized_still.url);
 
               gifDiv.append(p)
               gifDiv.append(personImage)
@@ -59,7 +61,38 @@ $(document).ready (function() {
 
       movies.push(search);
       renderButtons();
-      
+
+  });
+
+  $('.movie').click(function() {
+    console.log('movie clicked display data');
+    search = $(this).data("name");
+    var new_url = url + search + "&api_key=" + APIkey;
+    console.log('new_url: ' + new_url);
+    console.log('search is: '+ search);
+    $.ajax({
+      url: new_url ,
+      method: 'GET'})
+      .done(function(response) {
+          var results = response.data;
+          console.log(response);
+          $('#gifsAppearHere').empty();
+          for (var i = 0; i < results.length; i++) {
+              var gifDiv = $('<div class="col-xs-3">')
+
+              var rating = results[i].rating;
+
+              var p = $('<p>').text("Rating: " + rating);
+
+              var personImage = $('<img>');
+              personImage.attr('src', results[i].images.downsized_still.url);
+
+              gifDiv.append(p)
+              gifDiv.append(personImage)
+
+              $('#gifsAppearHere').append(gifDiv);
+          }
+      });
   });
 
 
