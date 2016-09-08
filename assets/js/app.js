@@ -3,57 +3,82 @@ var url = "http://api.giphy.com/v1/gifs/search?q=";
 var search;
 var movies = ['The Matrix', 'The Notebook', 'Mr. Nobody', 'The Lion King'];
 
+function changeState() {
+  var state = $(this).data("data-state");
+
+  console.log(state);
+  if ( state == 'still') {
+      $(this).attr('src', $(this).data('animate'));
+      $(this).attr('data-state', 'animate');
+  } else {
+      $(this).attr('src', $(this).data('still'));
+      $(this).attr('data-state', 'still');
+  }
+}
+
 $(document).ready (function() {
-  renderButtons();
 
   function renderButtons(){
-    console.log('render buttons function');
 
-		// Deletes the movies prior to adding new movies (this is necessary otherwise you will have repeat buttons)
 		$('#buttonMania').empty();
 
-		// Loops through the array of movies
 		for (var i = 0; i < movies.length; i++){
 
-			// Then dynamicaly generates buttons for each movie in the array
-
-			// Note the jQUery syntax here...
-		    var a = $('<button>') // This code $('<button>') is all jQuery needs to create the beginning and end tag. (<button></button>)
-		    a.addClass('movie'); // Added a class
-		    a.attr('data-name', movies[i]); // Added a data-attribute
+		    var a = $('<button>');
+		    a.addClass('movie');
+		    a.attr('data-name', movies[i]);
         a.attr('data-state', "still");
-		    a.text(movies[i]); // Provided the initial button text
-		    $('#buttonMania').append(a); // Added the button to the HTML
+        a.attr('data-still', "");
+        a.attr('data-animate', "");
 
+		    a.text(movies[i]);
+		    $('#buttonMania').append(a);
 		}
-	}
 
-  console.log("search value is: " + search);
+	}
+  renderButtons();
+
+  $('#gifsAppearHere').click(function() {
+      console.log("switch to different state");
+      var state = $('.giphy-image').data("data-state");
+      console.log(state);
+      if ( state == 'still') {
+          $(this).attr('src', $(this).data('animate'));
+          $(this).attr('data-state', 'animate');
+      } else {
+          $(this).attr('src', $(this).data('still'));
+          $(this).attr('data-state', 'still');
+      }
+  });
 
   $('#go-button').click(function() {
-    console.log('go button has been clicked');
     search = $('#search-query').val();
     var new_url = url + search + "&api_key=" + APIkey;
-    console.log('new_url: ' + new_url);
-    console.log('search is: '+ search);
     $.ajax({
       url: new_url ,
       method: 'GET'})
       .done(function(response) {
+
           var results = response.data;
+          $('#gifsAppearHere').empty();
+
           console.log(response);
           for (var i = 0; i < results.length; i++) {
-              var gifDiv = $('<div class="col-xs-3">')
+              var gifDiv = $('<div class="col-xs-4 giphy-img">')
 
               var rating = results[i].rating;
 
               var p = $('<p>').text("Rating: " + rating);
 
-              var personImage = $('<img>');
-              personImage.attr('src', results[i].images.downsized_still.url);
+              var personImage = $('<img class="giphy-image">');
+              personImage.attr('src', results[i].images.fixed_width_small_still.url);
+              personImage.attr('data-still', results[i].images.fixed_width_small_still.url);
+              personImage.attr('data-animate', results[i].images.fixed_width_small.url);
+              personImage.attr('data-state', "still");
+              console.log("state is : " + personImage.data("data-state"));
 
-              gifDiv.append(p)
-              gifDiv.append(personImage)
+              gifDiv.append(p);
+              gifDiv.append(personImage);
 
               $('#gifsAppearHere').append(gifDiv);
           }
@@ -65,11 +90,8 @@ $(document).ready (function() {
   });
 
   $('.movie').click(function() {
-    console.log('movie clicked display data');
     search = $(this).data("name");
     var new_url = url + search + "&api_key=" + APIkey;
-    console.log('new_url: ' + new_url);
-    console.log('search is: '+ search);
     $.ajax({
       url: new_url ,
       method: 'GET'})
@@ -78,22 +100,27 @@ $(document).ready (function() {
           console.log(response);
           $('#gifsAppearHere').empty();
           for (var i = 0; i < results.length; i++) {
-              var gifDiv = $('<div class="col-xs-3">')
+              var gifDiv = $('<div class="col-xs-4 giphy-img">');
 
               var rating = results[i].rating;
 
               var p = $('<p>').text("Rating: " + rating);
 
-              var personImage = $('<img>');
-              personImage.attr('src', results[i].images.downsized_still.url);
+              var personImage = $('<img class="giphy-image">');
+              personImage.attr('src', results[i].images.fixed_width_small_still.url);
+              personImage.attr('data-still', results[i].images.fixed_width_small_still.url);
+              personImage.attr('data-animate', results[i].images.fixed_width_small.url);
+              personImage.attr('data-state', "still");
 
-              gifDiv.append(p)
-              gifDiv.append(personImage)
+              gifDiv.append(p);
+              gifDiv.append(personImage);
 
               $('#gifsAppearHere').append(gifDiv);
           }
       });
   });
+
+
 
 
 });
