@@ -4,19 +4,21 @@ var search;
 var movies = ['The Matrix', 'The Notebook', 'Mr. Nobody', 'The Lion King'];
 
 function changeState() {
-  var state = $(this).data("data-state");
 
-  console.log(state);
-  if ( state == 'still') {
-      $(this).attr('src', $(this).data('animate'));
-      $(this).attr('data-state', 'animate');
-  } else {
-      $(this).attr('src', $(this).data('still'));
-      $(this).attr('data-state', 'still');
-  }
 }
 
 $(document).ready (function() {
+  $('body').on('click','.giphy-image',function(){
+    var state = $(this).data("state");
+    console.log(state);
+    if (state == 'still') {
+        $(this).attr('src', $(this).data('animate'));
+        $(this).data('state', 'animate');
+    } else {
+        $(this).attr('src', $(this).data('still'));
+        $(this).data('state', 'still');
+    }
+  });
 
   function renderButtons(){
 
@@ -37,19 +39,6 @@ $(document).ready (function() {
 
 	}
   renderButtons();
-
-  $('#gifsAppearHere').click(function() {
-      console.log("switch to different state");
-      var state = $('.giphy-image').data("data-state");
-      console.log(state);
-      if ( state == 'still') {
-          $(this).attr('src', $(this).data('animate'));
-          $(this).attr('data-state', 'animate');
-      } else {
-          $(this).attr('src', $(this).data('still'));
-          $(this).attr('data-state', 'still');
-      }
-  });
 
   $('#go-button').click(function() {
     search = $('#search-query').val();
@@ -119,8 +108,5 @@ $(document).ready (function() {
           }
       });
   });
-
-
-
 
 });
